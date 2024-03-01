@@ -53,4 +53,3 @@ jobs:
         run: |
           docker tag academy-coap ${{vars.REGISTRY_LOGIN_SERVER}}/coap |
           docker push ${{vars.REGISTRY_LOGIN_SERVER}}/coap
-

@@ -1,15 +1,15 @@
 name: Live test
 
 on:
-    workflow_dispatch:
-    schedule:
-      - cron: "0 0 * * *"
-    push:
-      paths:
-        - ".github/workflows/live-test.yaml"
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    paths:
+      - ".github/workflows/live-test.yaml"
 
 jobs:
-  test:
+  test-ipv4:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,3 +23,21 @@ jobs:
       - name: Run test client
         working-directory: client
         run: go run client.go -address coap.nordicsemi.academy
+
+  test-ipv6:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.6
+
+      - name: Set up WARP
+        uses: fscarmen/warp-on-actions@v1.0
+
+      - name: Run test client
+        working-directory: client
+        run: go run client.go -address coap.nordicsemi.academy -udp6
