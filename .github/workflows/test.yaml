@@ -37,7 +37,7 @@ jobs:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
-          docker run --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.REPO_IMAGE_TAGGED }}
+          docker run --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
 
       - run: docker ps
 
@@ -61,5 +61,7 @@ jobs:
         if: github.ref == 'refs/heads/saga'
         run: |
           docker login -u ${{ vars.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ vars.REGISTRY_LOGIN_SERVER }}
-          docker tag ${{ env.REPO_IMAGE_TAGGED }} ${{ env.REPO_IMAGE_LATEST }}
+          docker tag ${{ env.IMAGE_TAGGED }} ${{ env.REPO_IMAGE_TAGGED }} 
+          docker push ${{ env.REPO_IMAGE_TAGGED }}
+          docker tag ${{ env.IMAGE_TAGGED }} ${{ env.REPO_IMAGE_LATEST }}
           docker push ${{ env.REPO_IMAGE_LATEST }}
