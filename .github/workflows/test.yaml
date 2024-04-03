@@ -24,15 +24,6 @@ jobs:
         working-directory: server
         run: go build
 
-      - name: Build client
-        working-directory: client
-        run: go build
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: client
-          path: client/coap-client
-
       - name: Build image
         run: |
           docker build -t ${{ env.IMAGE_TAGGED }} .
@@ -54,9 +45,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/download-artifact@v4
-
-      - run: chmod +x ./client/coap-client
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.1
 
       - name: Log in to infrastructure container registry
         run: |
@@ -76,10 +68,12 @@ jobs:
       - run: docker ps
 
       - name: Run test client (IPv4)
-        run: ./client/coap-client -address 127.0.0.1
+        working-directory: client
+        run: go run client.go -address 127.0.0.1
 
       - name: Run test client (IPv6)
-        run: ./client/coap-client -address ::1 -udp6
+        working-directory: client
+        run: go run client.go -address ::1 -udp6
 
       - name: Docker logs
         if: always()

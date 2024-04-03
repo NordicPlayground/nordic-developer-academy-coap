@@ -26,7 +26,6 @@ func main() {
 	password := flag.String("password", "connect:anything",
 		"The password to use for the PSK in dTLS.")
 	dtls := flag.Bool("dTLS", false, "Start a dTLS server")
-	udp6 := flag.Bool("udp6", false, "Whether to use IPv6")
 	flag.Parse()
 
 	storageConnectionString, ok := os.LookupEnv("STORAGE_CONNECTION_STRING")
@@ -47,18 +46,9 @@ func main() {
 
 	udpPort := 5688
 	dTLSPort := 5689
-	var udpAddr string
-	var dtlsAddr string
-	var network string
-	if *udp6 {
-		udpAddr = fmt.Sprintf("[%s]:%d", *address, udpPort)
-		dtlsAddr = fmt.Sprintf("[%s]:%d", *address, dTLSPort)
-		network = "udp6"
-	} else {
-		udpAddr = fmt.Sprintf("%s:%d", *address, udpPort)
-		dtlsAddr = fmt.Sprintf("%s:%d", *address, dTLSPort)
-		network = "udp"
-	}
+	udpAddr := fmt.Sprintf("%s:%d", *address, udpPort)
+	dtlsAddr := fmt.Sprintf("%s:%d", *address, dTLSPort)
+	network := "udp"
 
 	if *dtls {
 		log.Printf("dTLS UDP Server listening on: %s\n", dtlsAddr)
