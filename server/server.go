@@ -26,6 +26,8 @@ func main() {
 	password := flag.String("password", "connect:anything",
 		"The password to use for the PSK in dTLS.")
 	dtls := flag.Bool("dTLS", false, "Start a dTLS server")
+	network := flag.String("network", "udp4",
+		"The network to use, `udp4` or `udp6`.")
 	flag.Parse()
 
 	storageConnectionString, ok := os.LookupEnv("STORAGE_CONNECTION_STRING")
@@ -48,12 +50,11 @@ func main() {
 	dTLSPort := 5689
 	udpAddr := fmt.Sprintf("%s:%d", *address, udpPort)
 	dtlsAddr := fmt.Sprintf("%s:%d", *address, dTLSPort)
-	network := "udp"
 
 	if *dtls {
 		log.Printf("dTLS UDP Server listening on: %s\n", dtlsAddr)
 		log.Printf("dTLS PSK: %s\n", *password)
-		log.Fatal(coap.ListenAndServeDTLS(network, dtlsAddr, &piondtls.Config{
+		log.Fatal(coap.ListenAndServeDTLS(*network, dtlsAddr, &piondtls.Config{
 			PSK: func(hint []byte) ([]byte, error) {
 				log.Printf("Client's hint: %s \n", hint)
 				return []byte(*password), nil
@@ -63,6 +64,6 @@ func main() {
 		}, r))
 	} else {
 		log.Printf("UDP Server listening on: %s\n", udpAddr)
-		log.Fatal(coap.ListenAndServe(network, udpAddr, r))
+		log.Fatal(coap.ListenAndServe(*network, udpAddr, r))
 	}
 }

@@ -9,37 +9,7 @@ env:
   REPO_IMAGE_LATEST: ${{ vars.REGISTRY_LOGIN_SERVER }}/coap:latest
 
 jobs:
-  image:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.22.1
-
-      - name: Build server
-        working-directory: server
-        run: go build
-
-      - name: Build image
-        run: |
-          docker build -t ${{ env.IMAGE_TAGGED }} .
-
-      - name: Log in to the infrastructure container registry
-        run: |
-          docker login -u ${{ vars.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ vars.REGISTRY_LOGIN_SERVER }}
-
-      - name: Push image to the infrastructure container registry
-        run: |
-          docker tag ${{ env.IMAGE_TAGGED }} ${{ env.REPO_IMAGE_TAGGED }}
-          docker push ${{ env.REPO_IMAGE_TAGGED }}
-
   tests:
-    needs: [image]
-
     runs-on: ubuntu-latest
 
     steps:
@@ -54,13 +24,13 @@ jobs:
         working-directory: client
         run: go build
 
-      - name: Log in to infrastructure container registry
-        run: |
-          docker login -u ${{ vars.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ vars.REGISTRY_LOGIN_SERVER }}
+      - name: Build server
+        working-directory: server
+        run: go build
 
-      - name: Pull image from the infrastructure container registry
+      - name: Build image
         run: |
-          docker pull ${{ env.REPO_IMAGE_TAGGED }}
+          docker build -t ${{ env.IMAGE_TAGGED }} .
 
       - name: Run image
         env:
@@ -87,23 +57,9 @@ jobs:
           docker ps
           docker container logs `docker ps | grep ${{ env.IMAGE_TAGGED }} | awk '{ print $1; }'`
 
-  publish:
-    if: github.ref == 'refs/heads/saga'
-
-    needs: [tests]
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Log in to infrastructure container registry
+      - name: Push image to the infrastructure container registry as latest
+        if: github.ref == 'refs/heads/saga'
         run: |
           docker login -u ${{ vars.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ vars.REGISTRY_LOGIN_SERVER }}
-
-      - name: Pull image from the infrastructure container registry
-        run: |
-          docker pull ${{ env.REPO_IMAGE_TAGGED }}
-
-      - name: Push image to the infrastructure container registry as latest
-        run: |
           docker tag ${{ env.REPO_IMAGE_TAGGED }} ${{ env.REPO_IMAGE_LATEST }}
           docker push ${{ env.REPO_IMAGE_LATEST }}
