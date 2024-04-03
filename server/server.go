@@ -52,7 +52,7 @@ func main() {
 	dtlsAddr := fmt.Sprintf("%s:%d", *address, dTLSPort)
 
 	if *dtls {
-		log.Printf("dTLS UDP Server listening on: %s\n", dtlsAddr)
+		log.Printf("dTLS %s Server listening on: %s\n", *network, dtlsAddr)
 		log.Printf("dTLS PSK: %s\n", *password)
 		log.Fatal(coap.ListenAndServeDTLS(*network, dtlsAddr, &piondtls.Config{
 			PSK: func(hint []byte) ([]byte, error) {
@@ -63,7 +63,7 @@ func main() {
 			CipherSuites:    []piondtls.CipherSuiteID{piondtls.TLS_PSK_WITH_AES_128_CCM_8},
 		}, r))
 	} else {
-		log.Printf("UDP Server listening on: %s\n", udpAddr)
+		log.Printf("%s Server listening on: %s\n", *network, udpAddr)
 		log.Fatal(coap.ListenAndServe(*network, udpAddr, r))
 	}
 }
