@@ -54,8 +54,8 @@ jobs:
     strategy:
       matrix:
         networking:
-          - ipv4
-          - ipv6
+          - IPv4
+          - IPv6
 
     steps:
       - uses: actions/checkout@v4
@@ -71,29 +71,29 @@ jobs:
           docker pull ${{ env.REPO_IMAGE_TAGGED }}
 
       - name: Run image (IPv4)
-        if: matrix.networking == 'ipv4'
+        if: matrix.networking == 'IPv4'
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
-          docker run --network=host --sysctl net.ipv6.conf.all.disable_ipv6=0 --sysctl net.ipv4.conf.all.disable_ipv4=1 -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.REPO_IMAGE_TAGGED }}
+          docker run --network=host --sysctl net.ipv6.conf.all.disable_ipv6=0 -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.REPO_IMAGE_TAGGED }}
 
       - name: Run image (IPv6)
-        if: matrix.networking == 'ipv6'
+        if: matrix.networking == 'IPv6'
         env:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
-          docker run --network=host --sysctl net.ipv6.conf.all.disable_ipv6=1 --sysctl net.ipv4.conf.all.disable_ipv4=0 -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.REPO_IMAGE_TAGGED }}
+          docker run --network=host --sysctl net.ipv6.conf.all.disable_ipv6=1 -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.REPO_IMAGE_TAGGED }}
 
       - run: docker ps
 
       - name: Run test client (IPv4)
-        if: matrix.networking == 'ipv4'
+        if: matrix.networking == 'IPv4'
         run: ./coap-client -address 127.0.0.1
 
       - name: Run test client (IPv6)
-        if: matrix.networking == 'ipv6'
+        if: matrix.networking == 'IPv6'
         run: ./coap-client -address ::1 -udp6
 
       - name: Docker logs
