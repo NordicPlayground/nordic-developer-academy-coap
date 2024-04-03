@@ -39,7 +39,7 @@ jobs:
         run: |
           docker run --cidfile container.cid --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
           CID=`cat container.cid`
-          echo 'CID=$CID' >> $GITHUB_ENV
+          echo "CID=${CID}" >> $GITHUB_ENV
 
       - run: docker ps
 
