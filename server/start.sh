@@ -27,6 +27,4 @@ for interface in $ipv6_interfaces; do
     done
 done
 
-sleep 1
-
-tail -f nohup.out
+sleep infinity
