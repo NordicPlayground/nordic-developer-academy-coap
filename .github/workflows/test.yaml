@@ -41,6 +41,10 @@ jobs:
 
       - run: docker ps
 
+      - name: wait for server to be up
+        timeout-minutes: 1
+        run: until nc -z localhost 5688; do sleep 1; done
+
       - run: docker container logs `docker ps | grep ${{ env.IMAGE_TAGGED }} | awk '{ print $1; }'`
 
       - name: Run test client (IPv4)
