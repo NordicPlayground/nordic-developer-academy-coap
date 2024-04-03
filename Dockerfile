@@ -2,11 +2,14 @@ FROM ubuntu:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -yq iproute2
-
-RUN \
-  apt-get install -y ca-certificates && \
+RUN <<EOT
+  apt-get -y update
+  apt-get -y install iproute2
+  apt-get -y install ca-certificates
   update-ca-certificates
+  apt-get -y clean
+  rm -rf /var/lib/apt/lists/*
+EOT
 
 RUN useradd -rm -d /home/coap -s /bin/bash -u 1002 coap
 
