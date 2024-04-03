@@ -43,9 +43,7 @@ jobs:
 
       - run: docker ps
 
-      - name: wait for server to be up
-        timeout-minutes: 1
-        run: until nc -z localhost 5688; do sleep 1; done
+      - run: docker container logs ${{ env.CID }}
 
       - name: Run test client (IPv4)
         working-directory: client
