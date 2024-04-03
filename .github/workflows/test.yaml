@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: coap-client
+          name: client
           path: client/coap-client
 
       - name: Build image
@@ -74,10 +74,10 @@ jobs:
       - run: docker ps
 
       - name: Run test client (IPv4)
-        run: ./coap-client -address 127.0.0.1
+        run: ./client/coap-client -address 127.0.0.1
 
       - name: Run test client (IPv6)
-        run: ./coap-client -address ::1 -udp6
+        run: ./client/coap-client -address ::1 -udp6
 
       - name: Docker logs
         if: always()
