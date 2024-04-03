@@ -56,6 +56,8 @@ jobs:
 
       - uses: actions/download-artifact@v4
 
+      - run: chmod +x ./client/coap-client
+
       - name: Log in to infrastructure container registry
         run: |
           docker login -u ${{ vars.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ vars.REGISTRY_LOGIN_SERVER }}
