@@ -37,15 +37,20 @@ jobs:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
-          docker run --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
+          docker run --cidfile container.cid --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
+          CID=`cat container.cid`
+          echo 'CID=$CID' >> $GITHUB_ENV
 
       - run: docker ps
 
       - name: wait for server to be up
         timeout-minutes: 1
-        run: until nc -z localhost 5688; do sleep 1; done
-
-      - run: docker container logs `docker ps | grep ${{ env.IMAGE_TAGGED }} | awk '{ print $1; }'`
+        run: |
+          until nc -z localhost 5688;
+          do
+            docker container logs ${{ env.CID }};
+            sleep 1; 
+          done
 
       - name: Run test client (IPv4)
         working-directory: client
@@ -57,9 +62,7 @@ jobs:
 
       - name: Docker logs
         if: always()
-        run: |
-          docker ps
-          docker container logs `docker ps | grep ${{ env.IMAGE_TAGGED }} | awk '{ print $1; }'`
+        run: docker container logs ${{ env.CID }}
 
       - name: Push image to the infrastructure container registry as latest
         if: github.ref == 'refs/heads/saga'
