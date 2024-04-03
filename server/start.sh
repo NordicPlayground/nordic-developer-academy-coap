@@ -14,7 +14,6 @@ for interface in $ipv4_interfaces; do
     nohup /home/coap/coap-server -address $IP -network udp4 &
 done
 
-
 # Enumerate all IPv6 network interfaces and get their assigned IP addresses
 ipv6_interfaces=$(ip -o -6 addr show | awk '{print $2}' | cut -d':' -f1 | sort -u)
 for interface in $ipv6_interfaces; do
