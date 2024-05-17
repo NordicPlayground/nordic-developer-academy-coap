@@ -6,8 +6,8 @@ import (
 	"io"
 	"log"
 
-	"github.com/plgd-dev/go-coap/v3/udp/client"
 	"github.com/plgd-dev/go-coap/v3/message"
+	"github.com/plgd-dev/go-coap/v3/udp/client"
 )
 
 // Test Hello resource

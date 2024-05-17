@@ -22,4 +22,7 @@ WORKDIR /home/coap
 EXPOSE 5688/udp
 EXPOSE 5689/udp
 
+EXPOSE 5683/udp
+EXPOSE 5684/udp
+
 CMD [ "/home/coap/start.sh" ]

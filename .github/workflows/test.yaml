@@ -1,6 +1,8 @@
 name: Tests
 
-on: [push]
+on:
+  - push
+  - pull_request
 
 env:
   IMAGE_TAGGED: coap:${{ github.sha }}
@@ -36,7 +38,7 @@ jobs:
           STORAGE_CONNECTION_STRING: ${{ secrets.STORAGE_CONNECTION_STRING }}
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
-          docker run --cidfile container.cid --network=host -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
+          docker run --cidfile container.cid --network=host -p 5683:5683/udp -p 5684:5684/udp -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
           CID=`cat container.cid`
           echo "CID=${CID}" >> $GITHUB_ENV
 
