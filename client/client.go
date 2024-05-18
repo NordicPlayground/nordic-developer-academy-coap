@@ -36,6 +36,8 @@ func main() {
 	password := flag.String("password", "connect:anything",
 		"The password to use for the PSK in dTLS.")
 	udp6 := flag.Bool("udp6", false, "Whether to use IPv6")
+	udpPort := flag.Int("udpPort", 5683, "The port to use for UPD")
+	dTLSPort := flag.Int("dTLSPort", 5684, "The port to use for dTLS")
 	flag.Parse()
 
 	var flagValues = flags{
@@ -44,12 +46,7 @@ func main() {
 		udp6:     *udp6,
 	}
 
-	// Testing with Old Config
-	testPorts(flagValues, 5688, 5689)
-
-	// Testing with New Config
-	testPorts(flagValues, 5683, 5684)
-
+	testPorts(flagValues, *udpPort, *dTLSPort)
 }
 
 func testPorts(flagValues flags, udpPort int, dTLSPort int) {
