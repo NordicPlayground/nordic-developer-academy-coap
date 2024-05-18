@@ -46,13 +46,21 @@ jobs:
 
       - run: docker container logs ${{ env.CID }}
 
-      - name: Run test client (IPv4)
+      - name: Run test client (IPv4, old ports)
         working-directory: client
-        run: ./coap-client
+        run: ./coap-client -udpPort 5688 -dTLSPort 5689
 
-      - name: Run test client (IPv6)
+      - name: Run test client (IPv6, old ports)
         working-directory: client
-        run: ./coap-client -udp6
+        run: ./coap-client -udp6 -udpPort 5688 -dTLSPort 5689
+
+      - name: Run test client (IPv4, new ports)
+        working-directory: client
+        run: ./coap-client -udpPort 5683 -dTLSPort 5684
+
+      - name: Run test client (IPv6, new ports)
+        working-directory: client
+        run: ./coap-client -udp6 -udpPort 5683 -dTLSPort 5684
 
       - name: Docker logs
         if: always()

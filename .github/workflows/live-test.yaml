@@ -20,9 +20,15 @@ jobs:
         with:
           go-version: 1.22.1
 
-      - name: Run test client
+      - name: Run test client (old ports)
         working-directory: client
-        run: go run client.go -address coap.nordicsemi.academy
+        run: go run client.go -address coap.nordicsemi.academy -udpPort 5688 -dTLSPort 5689
+
+      - name: Run test client (new ports)
+        # Skip until deployed
+        if: false
+        working-directory: client
+        run: go run client.go -address coap.nordicsemi.academy -udpPort 5683 -dTLSPort 5684
 
   test-ipv6:
     runs-on: ubuntu-latest
@@ -38,6 +44,12 @@ jobs:
       - name: Set up WARP
         uses: fscarmen/warp-on-actions@v1.0
 
-      - name: Run test client
+      - name: Run test client (old ports)
         working-directory: client
-        run: go run client.go -address coap.nordicsemi.academy -udp6
+        run: go run client.go -address coap.nordicsemi.academy -udp6 -udpPort 5688 -dTLSPort 5689
+
+      - name: Run test client (new ports)
+        # Skip until deployed
+        if: false
+        working-directory: client
+        run: go run client.go -address coap.nordicsemi.academy -udpPort 5683 -dTLSPort 5684
