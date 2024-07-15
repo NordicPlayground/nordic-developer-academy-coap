@@ -115,6 +115,7 @@ func logMetrics (dtls bool, network string) func (next mux.Handler) mux.Handler 
 				log.Printf("cannot write to log file: %v", err)
 			}
 			log.Printf("Logged metric: %s to %s", metricLog, metricLogsFilePath)
+			_ = metricLogsFile.Close()
 			next.ServeCOAP(w, r)
 		})
 	}
