@@ -9,6 +9,7 @@ RUN <<EOT
   update-ca-certificates
   apt-get -y clean
   rm -rf /var/lib/apt/lists/*
+  mkdir /var/log/academy
 EOT
 
 RUN useradd -rm -d /home/coap -s /bin/bash -u 1002 coap

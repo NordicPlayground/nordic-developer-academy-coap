@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"time"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/plgd-dev/go-coap/v3/message"
 	"github.com/plgd-dev/go-coap/v3/message/codes"
@@ -87,10 +88,41 @@ func dynamicResource(client *azblob.Client, containerName string) func(mux.Respo
 	}
 }
 
+/**
+ * Log usage metrics in the format that is supported by Log Analytics agent in Azure Monitor
+ *
+ * See https://learn.microsoft.com/en-us/azure/azure-monitor/agents/data-sources-custom-logs
+*/
+func logMetrics (dtls bool, network string) func (next mux.Handler) mux.Handler {
+	return func (next mux.Handler) mux.Handler {
+		return mux.HandlerFunc(func(w mux.ResponseWriter, r *mux.Message) {
+			currentTime := time.Now().Format("2006-01-02T15:04:05Z07:00")
+			var protocol string
+			if dtls {
+				protocol = "dTLS"
+			} else {
+				protocol = "UDP"
+			}
+			metricLog := fmt.Sprintf("%s,%s:%s,request", currentTime, protocol, network)
+			metricLogsFilePath := fmt.Sprintf("/var/log/academy/%s-coap.log", time.Now().Format("2006-01-02"))
+			metricLogsFile, err := os.OpenFile(metricLogsFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Printf("cannot open log file: %v", err)
+			}
+			defer metricLogsFile.Close()
+			_, err = metricLogsFile.WriteString(metricLog + "\n")
+			if err != nil {
+				log.Printf("cannot write to log file: %v", err)
+			}
+			next.ServeCOAP(w, r)
+		})
+	}
+}
 
-func NewServer(client *azblob.Client, containerName string) *mux.Router {
+func NewServer(client *azblob.Client, containerName string, dtls bool, network string) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(loggingMiddleware)
+	r.Use(logMetrics(dtls, network))
 	r.Handle("/static/hello", mux.HandlerFunc(helloResource))
 	r.Handle("/{res:[^\\/]+}", mux.HandlerFunc(dynamicResource(client, containerName)))
 	return r
