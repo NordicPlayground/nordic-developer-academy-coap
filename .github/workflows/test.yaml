@@ -43,7 +43,7 @@ jobs:
 
       - name: Get container ID
         run: |
-          CONTAINER_ID=$(docker ps -q --filter "ancestor=udp-echo")
+          CONTAINER_ID=$(docker ps -q --filter "ancestor=${{ env.IMAGE_TAGGED }}")
           echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
 
       - run: docker container logs ${{ env.CID }}
