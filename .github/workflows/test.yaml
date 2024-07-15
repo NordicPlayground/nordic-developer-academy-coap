@@ -1,7 +1,6 @@
 name: Tests
 
 on:
-  - push
   - pull_request
 
 env:
@@ -42,7 +41,10 @@ jobs:
           CID=`cat container.cid`
           echo "CID=${CID}" >> $GITHUB_ENV
 
-      - run: docker ps
+      - name: Get container ID
+        run: |
+          CONTAINER_ID=$(docker ps -q --filter "ancestor=udp-echo")
+          echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
 
       - run: docker container logs ${{ env.CID }}
 
@@ -64,7 +66,7 @@ jobs:
 
       - name: Get log file
         run: |
-          LOG_FILES=`docker exec ${{ env.CONTAINER_ID }} bash -c 'ls /var/log/academy/'`
+          LOG_FILES=`docker exec ${{ env.CONTAINER_ID  }} bash -c 'ls /var/log/academy/'`
           for file in "${LOG_FILES[@]}"; do
             docker cp ${{ env.CONTAINER_ID }}:/var/log/academy/$file ./
           done
