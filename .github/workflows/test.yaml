@@ -38,15 +38,13 @@ jobs:
           STORAGE_CONTAINER_NAME: ${{ vars.STORAGE_CONTAINER_NAME }}
         run: |
           docker run --cidfile container.cid --network=host -p 5683:5683/udp -p 5684:5684/udp -p 5688:5688/udp -p 5689:5689/udp -e STORAGE_CONNECTION_STRING -e STORAGE_CONTAINER_NAME -d ${{ env.IMAGE_TAGGED }}
-          CID=`cat container.cid`
-          echo "CID=${CID}" >> $GITHUB_ENV
 
       - name: Get container ID
         run: |
           CONTAINER_ID=$(docker ps -q --filter "ancestor=${{ env.IMAGE_TAGGED }}")
           echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
 
-      - run: docker container logs ${{ env.CID }}
+      - run: docker container logs ${{ env.CONTAINER_ID }}
 
       - name: Run test client (IPv4, old ports)
         working-directory: client
@@ -93,7 +91,7 @@ jobs:
 
       - name: Docker logs
         if: always()
-        run: docker container logs ${{ env.CID }}
+        run: docker container logs ${{ env.CONTAINER_ID }}
 
       - name: Push image to the infrastructure container registry as latest
         if: github.ref == 'refs/heads/saga'
