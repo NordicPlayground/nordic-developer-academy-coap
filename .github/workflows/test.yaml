@@ -44,11 +44,12 @@ jobs:
           CONTAINER_ID=$(docker ps -q --filter "ancestor=${{ env.IMAGE_TAGGED }}")
           echo "CONTAINER_ID=$CONTAINER_ID" >> $GITHUB_ENV
 
-      - name: Wait for server
-        run: |
-          while ! nc -z 127.0.0.1 35411; do sleep 1; done
-
       - run: docker container logs ${{ env.CONTAINER_ID }}
+
+      - name: Wait for server
+        timeout-minutes: 1
+        run: |
+          while ! nc -uvz localhost 5683; do sleep 1; done
 
       - name: Run test client (IPv4, old ports)
         working-directory: client
