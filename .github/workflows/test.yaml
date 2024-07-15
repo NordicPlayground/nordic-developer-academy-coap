@@ -70,8 +70,8 @@ jobs:
       - name: Get log file
         run: |
           LOG_FILES=`docker exec ${{ env.CONTAINER_ID  }} bash -c 'ls /var/log/academy/'`
-          for file in "${LOG_FILES[@]}"; do
-            docker cp ${{ env.CONTAINER_ID }}:/var/log/academy/$file ./
+          echo $LOG_FILES | while read file ; do
+            docker cp ${CONTAINER_ID}:/var/log/academy/$file ./
           done
 
       - name: Test log files
