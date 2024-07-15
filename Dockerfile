@@ -13,6 +13,7 @@ RUN <<EOT
 EOT
 
 RUN useradd -rm -d /home/coap -s /bin/bash -u 1002 coap
+RUN chmod 777 /var/log/academy
 
 COPY --chown=coap:coap ./server/coap-server         /home/coap/coap-server
 COPY --chown=coap:coap ./server/start.sh            /home/coap/start.sh
