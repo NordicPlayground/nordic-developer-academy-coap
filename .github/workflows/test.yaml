@@ -69,25 +69,19 @@ jobs:
             docker cp ${{ env.CONTAINER_ID }}:/var/log/academy/$file ./
           done
 
-      - name: Test log file
+      - name: Test log files
         run: |
-          LOG_FILE=(*-coap.log)
-          if [[ -f $LOG_FILE ]]; then
-            echo "Log file exists: $LOG_FILE"
-          else
-            echo "Log file does not exist: $LOG_FILE"
-            # exit 1
-          fi
-          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,dTLS:udp6,request$" $LOG_FILE
-          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,UDP:udp6,request$" $LOG_FILE
-          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,dTLS:udp4,request$" $LOG_FILE
-          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,UDP:udp4,request$" $LOG_FILE
+          cat *-coap-*.log > all-coap.log
+          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,dTLS:udp6,request$" all-coap.log
+          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,UDP:udp6,request$" all-coap.log
+          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,dTLS:udp4,request$" all-coap.log
+          grep -E "^20[0-9]{2}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}\.[0-9]+[^,]+,UDP:udp4,request$" all-coap.log
 
       - uses: actions/upload-artifact@v4
         with:
           name: metric-logs-${{ github.sha }}
           path: |
-            *-coap.log
+            *-coap-*.log
 
       - name: Docker logs
         if: always()

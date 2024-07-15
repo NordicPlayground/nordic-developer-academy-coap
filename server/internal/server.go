@@ -104,7 +104,7 @@ func logMetrics (dtls bool, network string) func (next mux.Handler) mux.Handler 
 				protocol = "UDP"
 			}
 			metricLog := fmt.Sprintf("%s,%s:%s,request", currentTime, protocol, network)
-			metricLogsFilePath := fmt.Sprintf("/var/log/academy/%s-coap.log", time.Now().Format("2006-01-02"))
+			metricLogsFilePath := fmt.Sprintf("/var/log/academy/%s-coap-%s-%s.log", time.Now().Format("2006-01-02"), protocol, network)
 			metricLogsFile, err := os.OpenFile(metricLogsFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				log.Printf("cannot open log file: %v", err)
@@ -115,7 +115,6 @@ func logMetrics (dtls bool, network string) func (next mux.Handler) mux.Handler 
 				log.Printf("cannot write to log file: %v", err)
 			}
 			log.Printf("Logged metric: %s to %s", metricLog, metricLogsFilePath)
-			_ = metricLogsFile.Close()
 			next.ServeCOAP(w, r)
 		})
 	}
