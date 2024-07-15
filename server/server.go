@@ -55,7 +55,7 @@ func main() {
 	}
 	log.Printf("Container name: %s\n", containerName)
 
-	r := internal.NewServer(storageClient, containerName)
+	r := internal.NewServer(storageClient, containerName, *dtls, *network)
 
 	// old ports
 	go launch.Server(flagValues, ports.OldUdpPort, ports.OldDtlsPort, r)
