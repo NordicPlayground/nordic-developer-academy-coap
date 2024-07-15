@@ -1,7 +1,10 @@
 name: Tests
 
 on:
-  - pull_request
+  push:
+      branches:
+        - saga
+  pull_request:
 
 env:
   IMAGE_TAGGED: coap:${{ github.sha }}
