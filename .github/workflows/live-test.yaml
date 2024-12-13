@@ -47,7 +47,5 @@ jobs:
         run: go run client.go -address coap.nordicsemi.academy -udp6 -udpPort 5688 -dTLSPort 5689
 
       - name: Run test client (new ports)
-        # Skip until deployed
-        if: false
         working-directory: client
         run: go run client.go -address coap.nordicsemi.academy -udpPort 5683 -dTLSPort 5684
