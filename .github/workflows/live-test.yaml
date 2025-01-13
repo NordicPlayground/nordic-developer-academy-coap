@@ -31,6 +31,8 @@ jobs:
   test-ipv6:
     # openresolv is not available on ubuntu-24.04
     runs-on: ubuntu-22.04
+    # Disabled: https://github.com/NordicPlayground/nordic-developer-academy-coap/issues/9
+    if: false
 
     steps:
       - uses: actions/checkout@v4
